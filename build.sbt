@@ -23,7 +23,14 @@ developers := List(
   )
 )
 
-crossScalaVersions := List("2.10.7", "2.11.12", "2.12.10", "2.13.1")
+crossScalaVersions := List("2.10.7", "2.11.12", "2.12.11", "2.13.1", "0.22.0-RC1", "0.23.0-RC1")
+
+/** Add src/main/scala-{2|3} to Compile / unmanagedSourceDirectories */
+Compile / unmanagedSourceDirectories +=
+  (CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((0 | 3, _)) => (Compile / sourceDirectory).value / "scala-3"
+    case _                => (Compile / sourceDirectory).value / "scala-2"
+  })
 
 libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.1.1",
