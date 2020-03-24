@@ -23,7 +23,19 @@ developers := List(
   )
 )
 
-crossScalaVersions := List("2.10.7", "2.11.12", "2.12.11", "2.13.2")
+crossScalaVersions := List(
+  "2.10.7", "2.11.12", "2.12.11", "2.13.2",
+  "0.23.0", "0.24.0-RC1",
+)
+
+/** Add src/main/scala-{2|3} to Compile / unmanagedSourceDirectories */
+Compile / unmanagedSourceDirectories ++= {
+  val sourceDir = (Compile / sourceDirectory).value
+  CrossVersion.partialVersion(scalaVersion.value).map {
+    case (0 | 3, _) => sourceDir / "scala-3"
+    case (n, _) => sourceDir / s"scala-$n"
+  }
+}
 
 libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.1.2",
