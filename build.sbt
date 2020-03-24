@@ -1,6 +1,9 @@
 name := "junit-4.12"
 
-organization := "org.scalatestplus"
+// need this because scalatest is not published for dotty 0.23 yet
+val customBuild = Def.setting { scalaVersion.value.startsWith("0.23.") }
+
+organization := (if (customBuild.value) "com.sandinh" else "org.scalatestplus")
 
 version := "3.1.1.0"
 
@@ -24,6 +27,7 @@ developers := List(
 )
 
 crossScalaVersions := List("2.10.7", "2.11.12", "2.12.11", "2.13.1", "0.22.0-RC1", "0.23.0-RC1")
+scalaVersion := "0.23.0-RC1"
 
 /** Add src/main/scala-{2|3} to Compile / unmanagedSourceDirectories */
 Compile / unmanagedSourceDirectories +=
@@ -33,7 +37,7 @@ Compile / unmanagedSourceDirectories +=
   })
 
 libraryDependencies ++= Seq(
-  "org.scalatest" %% "scalatest" % "3.1.1",
+  (if (customBuild.value) "com.sandinh" else "org.scalatest") %% "scalatest" % "3.1.1",
   "junit" % "junit" % "4.13"
 )
 Test / scalacOptions ++= (if (isDotty.value) Seq("-language:implicitConversions") else Nil)
@@ -82,19 +86,10 @@ OsgiKeys.additionalHeaders:= Map(
   "Bundle-Vendor" -> "Artima, Inc."
 )
 
-publishTo := {
-  val nexus = "https://oss.sonatype.org/"
-  Some("publish-releases" at nexus + "service/local/staging/deploy/maven2")
-}
+publishTo := sonatypePublishToBundle.value
 
 publishMavenStyle := true
 
 publishArtifact in Test := false
 
 pomIncludeRepository := { _ => false }
-
-credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
-
-pgpSecretRing := file((Path.userHome / ".gnupg" / "secring.gpg").getAbsolutePath)
-
-pgpPassphrase := None
