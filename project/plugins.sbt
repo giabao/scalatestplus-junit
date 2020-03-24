@@ -5,3 +5,5 @@ addSbtPlugin("com.geirsson" % "sbt-ci-release" % "1.5.3")
 addSbtPlugin("com.typesafe.sbt" % "sbt-osgi" % "0.9.5")
 
 addSbtPlugin("ch.epfl.lamp" % "sbt-dotty" % "0.4.1")
+
+addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "3.9.2")

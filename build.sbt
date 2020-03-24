@@ -1,8 +1,15 @@
 name := "junit-4.12"
 
-organization := "org.scalatestplus"
+val versionSuffix = Def.setting {
+  val sv = scalaVersion.value
+  val isDottyNightly = isDotty.value && sv.length > 10 // // "0.xx.0-bin".length
+  if (isDottyNightly) "-dotty" + sv.substring(10)
+  else ""
+}
 
-version := "3.1.2.0"
+organization := "com.sandinh"
+
+version := "3.1.2.0" + versionSuffix.value
 
 homepage := Some(url("https://github.com/scalatest/scalatestplus-junit"))
 
@@ -26,6 +33,7 @@ developers := List(
 crossScalaVersions := List(
   "2.10.7", "2.11.12", "2.12.11", "2.13.2",
   "0.23.0", "0.24.0-RC1",
+  // "0.25.0-bin-20200523-5358651-NIGHTLY"
 )
 
 /** Add src/main/scala-{2|3} to Compile / unmanagedSourceDirectories */
@@ -37,8 +45,13 @@ Compile / unmanagedSourceDirectories ++= {
   }
 }
 
+val scalatest = Def.setting {
+  if (versionSuffix.value.isEmpty) "org.scalatest" %% "scalatest" % "3.1.2"
+  else "com.sandinh" %% "scalatest" % ("3.1.2" + versionSuffix.value)
+}
+
 libraryDependencies ++= Seq(
-  "org.scalatest" %% "scalatest" % "3.1.2",
+  scalatest.value,
   "junit" % "junit" % "4.13"
 )
 Test / scalacOptions ++= (if (isDotty.value) Seq("-language:implicitConversions") else Nil)
@@ -87,19 +100,10 @@ OsgiKeys.additionalHeaders:= Map(
   "Bundle-Vendor" -> "Artima, Inc."
 )
 
-publishTo := {
-  val nexus = "https://oss.sonatype.org/"
-  Some("publish-releases" at nexus + "service/local/staging/deploy/maven2")
-}
+publishTo := sonatypePublishToBundle.value
 
 publishMavenStyle := true
 
 publishArtifact in Test := false
 
 pomIncludeRepository := { _ => false }
-
-credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
-
-pgpSecretRing := file((Path.userHome / ".gnupg" / "secring.gpg").getAbsolutePath)
-
-pgpPassphrase := None
