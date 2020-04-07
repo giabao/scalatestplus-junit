@@ -1,11 +1,22 @@
 name := "junit-4.12"
 
 // need this because scalatest is not published for dotty 0.23 yet
-val customBuild = Def.setting { scalaVersion.value.startsWith("0.23.") }
+val customBuild = Def.setting {
+  CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((0, n)) if n > 23 => true
+    case _                      => false
+  }
+}
+lazy val versionSuffix = Def.setting {
+  val sv = scalaVersion.value
+  val isDottyNightly = isDotty.value && sv.length > 10 // // "0.xx.0-bin".length
+  if (isDottyNightly) "-dotty" + sv.substring(10)
+  else ""
+}
 
 organization := (if (customBuild.value) "com.sandinh" else "org.scalatestplus")
 
-version := "3.1.1.0"
+version := "3.1.1.0" + versionSuffix.value
 
 homepage := Some(url("https://github.com/scalatest/scalatestplus-junit"))
 
@@ -26,7 +37,7 @@ developers := List(
   )
 )
 
-crossScalaVersions := List("2.10.7", "2.11.12", "2.12.11", "2.13.1", "0.22.0-RC1", "0.23.0-RC1")
+crossScalaVersions := List("2.10.7", "2.11.12", "2.12.11", "2.13.1", "0.22.0-RC1", "0.23.0-RC1", "0.24.0-bin-20200324-6cd3a9d-NIGHTLY")
 scalaVersion := "0.23.0-RC1"
 
 /** Add src/main/scala-{2|3} to Compile / unmanagedSourceDirectories */
@@ -37,7 +48,8 @@ Compile / unmanagedSourceDirectories +=
   })
 
 libraryDependencies ++= Seq(
-  (if (customBuild.value) "com.sandinh" else "org.scalatest") %% "scalatest" % "3.1.1",
+  (if (customBuild.value) "com.sandinh"
+   else "org.scalatest") %% "scalatest" % ("3.1.1" + versionSuffix.value),
   "junit" % "junit" % "4.13"
 )
 Test / scalacOptions ++= (if (isDotty.value) Seq("-language:implicitConversions") else Nil)
