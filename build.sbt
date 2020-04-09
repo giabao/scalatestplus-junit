@@ -37,8 +37,8 @@ developers := List(
   )
 )
 
-crossScalaVersions := List("2.10.7", "2.11.12", "2.12.11", "2.13.1", "0.22.0-RC1", "0.23.0-RC1", "0.24.0-bin-20200406-eff5496-NIGHTLY")
-scalaVersion := "0.23.0-RC1"
+crossScalaVersions := List("2.10.7", "2.11.12", "2.12.11", "2.13.1", "0.22.0-RC1", "0.23.0-RC1", "0.24.0-bin-20200408-4cc224b-NIGHTLY")
+scalaVersion := crossScalaVersions.value.last
 
 /** Add src/main/scala-{2|3} to Compile / unmanagedSourceDirectories */
 Compile / unmanagedSourceDirectories +=
