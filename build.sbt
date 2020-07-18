@@ -31,6 +31,8 @@ crossScalaVersions := List(
   "0.24.0"
 )
 
+scalaVersion := System.getProperty("scalaVersion", crossScalaVersions.value.last)
+
 /** Add src/main/scala-{2|3} to Compile / unmanagedSourceDirectories */
 Compile / unmanagedSourceDirectories ++= {
   val sourceDir = (Compile / sourceDirectory).value
