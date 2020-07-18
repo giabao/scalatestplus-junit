@@ -1,4 +1,6 @@
 # ScalaTest + JUnit
+![dotty](https://github.com/giabao/scalatestplus-junit/workflows/dotty/badge.svg)
+
 ScalaTest + JUnit provides integration support between ScalaTest and JUnit.
 
 **Usage**
