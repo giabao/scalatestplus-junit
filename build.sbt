@@ -26,9 +26,10 @@ developers := List(
 crossScalaVersions := List(
   "2.10.7", 
   "2.11.12", 
-  "2.12.11", 
-  "2.13.2", 
-  "0.24.0"
+  "2.12.12",
+  "2.13.3",
+  "0.24.0",
+  "0.25.0-RC2",
 )
 
 scalaVersion := System.getProperty("scalaVersion", crossScalaVersions.value.last)
