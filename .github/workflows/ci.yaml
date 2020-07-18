@@ -1,0 +1,40 @@
+name: dotty
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [ adopt@1.8, adopt@1.11, adopt@1.14 ]
+        scala: [ 2.10.7, 2.11.12, 2.12.12, 2.13.3, 0.24.0, 0.25.0-RC2 ]
+    name: build on ${{ matrix.java }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache Ivy
+        uses: actions/cache@v1
+        with:
+          path: ~/.ivy2/cache
+          key: ${{ runner.os }}-ivy-${{ hashFiles('*.sbt') }}-${{ hashFiles('project/*.*') }}
+          restore-keys: ${{ runner.os }}-ivy-
+      - name: Cache Sbt
+        uses: actions/cache@v1
+        with:
+          path: ~/.sbt
+          key: ${{ runner.os }}-sbt-${{ hashFiles('*.sbt') }}-${{ hashFiles('project/*.*') }}
+          restore-keys: ${{ runner.os }}-sbt-
+      - name: Cache Coursier
+        uses: actions/cache@v1
+        with:
+          path: ~/.cache/coursier
+          key: ${{ runner.os }}-coursier-${{ hashFiles('*.sbt') }}-${{ hashFiles('project/*.*') }}
+          restore-keys: ${{ runner.os }}-coursier-
+      - uses: olafurpg/setup-scala@v7
+        with:
+          java-version: ${{ matrix.java }}
+      - name: build
+        run: sbt -DscalaVersion=${{ matrix.scala }} test
